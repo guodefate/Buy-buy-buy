@@ -15,7 +15,7 @@
                         <div class="goods-box clearfix">
                             <div class="pic-box">
                                 <!-- 放大镜组件 -->
-                                <ProductZoomer
+                                <ProductZoomer v-if="images.normal_size.length!=0"
                                   :base-images="images"
                                   :base-zoomer-options="zoomerOptions"
                                 />
@@ -58,7 +58,8 @@
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
                                                 <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
-                                                <button onclick="cartAdd(this,'/',0,'/cart.html');" class="add">加入购物车</button>
+                                                <!-- 在需要修改的地方,通过$store.commit('事件名'),即可触发仓库数据的修改 -->
+                                                <button @click="$store.commit('increment')" class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -181,21 +182,20 @@ export default {
       images:{                                                                                    
       'normal_size':  // required                          
       [                                             
-        {'id':'unique id', 'url': 'image url'},      
-        {'id':'unique id', 'url': 'image url'}       
+        // {'id':'unique id', 'url': 'image url'},      
+        // {'id':'unique id', 'url': 'image url'}       
       ]                                               
                                                                      
  },
       //放大镜的设置
-      zoomerOptions:{
-         
+      zoomerOptions:{        
         'zoomFactor': 4,
-        'pane': 'container',
-        'hoverDelay': 300,
-        'namespace': 'container-zoomer',
-        'move_by_click':true,
-        'scroll_items': 4,
-        'choosed_thumb_border_color': "#ff3d00"
+       'pane': 'container-round',
+       'hoverDelay': 300,
+       'namespace': 'inline-zoomer',
+       'move_by_click':true,
+       'scroll_items': 5,
+       'choosed_thumb_border_color': "#bbdefb"
      }      
     };         
   },
@@ -212,9 +212,20 @@ export default {
         )
         .then(res => {
         //   console.log(res);
+        // 获取商品信息
           this.goodsinfo = res.data.message.goodsinfo;
+        // 获取图片
           this.imglist = res.data.message.imglist;
+        // 获取热卖商品
           this.hotgoodslist = res.data.message.hotgoodslist;
+        // 设置 给 images放大镜数据即可
+          this.images.normal_size=[];
+          this.imglist.forEach(v=>{
+              this.images.normal_size.push({
+                  id:v.id,
+                  url:v.original_path
+              })
+          })
         });
         // 调用获取评论的方法
         this.getComments();
@@ -271,8 +282,13 @@ export default {
     //保存数据
     this.initData();
   },
+  updated() {
+        window.scroll(0, 0);
+    },
   watch: {
     $route(newVal, oldVal) {
+        // 设置图片数组为空 让放大镜组件 重新生成
+       this.images.normal_size=[];
         this.initData();
     }
   }
@@ -287,5 +303,15 @@ export default {
     font-size: 70px;
     display: block;
     transform: rotateZ(-45deg);
+}
+.inline-zoomer-zoomer-box{
+    width:390px;
+}
+.inline-zoomer-zoomer-box img{
+    height:315px;
+}
+.thumb-list img{
+    width:100px;
+    height:100px;
 }
 </style>

@@ -10,7 +10,7 @@ import detail from "./components/detail.vue"
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 //导入css样式
 import "./assets/site/css/style.css";
 // 导入axios
@@ -22,8 +22,8 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 Vue.use(iView);
 // 导入放大镜模块
-import ProductZoomer from 'vue-product-zoomer'
-Vue.use(ProductZoomer)
+import ProductZoomer from 'vue-product-zoomer';
+Vue.use(ProductZoomer);
 // 路由规则
 let routes = [{
     path: '/',
@@ -52,8 +52,26 @@ Vue.filter('shortTime', value =>{
 Vue.filter('shortTimePlus', value =>{ 
   return moment(value).format("YYYY-MM-DD HH:mm:ss");
 })
+
+// vuex的使用
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+// 实例化仓库对象
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+ 
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
 // 实例化Vue
 new Vue({
   render: h => h(App),
-  router
+  router,
+  store
 }).$mount('#app')
