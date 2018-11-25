@@ -13,7 +13,13 @@
                 <div class="wrap-box">
                     <div class="left-925">
                         <div class="goods-box clearfix">
-                            <div class="pic-box"></div>
+                            <div class="pic-box">
+                                <!-- 放大镜组件 -->
+                                <ProductZoomer
+                                  :base-images="images"
+                                  :base-zoomer-options="zoomerOptions"
+                                />
+                            </div>
                             <div class="goods-spec">
                                 <h1>{{goodsinfo.title}}</h1>
                                 <p class="subtitle">{{goodsinfo.sub_title}}</p>
@@ -60,18 +66,19 @@
                             </div>
                         </div>
                         <div id="goodsTabs" class="goods-tab bg-wrap">
+                            <Affix>
                             <div id="tabHead" class="tab-head" style="position: static; top: 517px; width: 925px;">
-                                <ul>
-                                     <Affix>
+                                <ul>  
                                     <li>
                                         <a href="javascript:;" @click="tabIndex=0"  :class="{selected:tabIndex==0}">商品介绍</a>
                                     </li>
                                     <li>
                                         <a href="javascript:;" @click="tabIndex=1" :class="{selected:tabIndex==1}">商品评论</a>
                                     </li>
-                                     </Affix>
+                                    
                                 </ul>
                             </div>
+                             </Affix>
                             <div class="tab-content entry" v-show="tabIndex==0" v-html="goodsinfo.content">
     
                             </div>
@@ -83,11 +90,11 @@
                                         </div>
                                         <div class="conn-box">
                                             <div class="editor">
-                                                <textarea id="txtContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
+                                                <textarea id="txtContent" v-model="comment" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                             <div class="subcon">
-                                                <input id="btnSubmit" name="submit" type="submit" value="提交评论" class="submit">
+                                                <input id="btnSubmit" @click="submitComment" name="submit" type="submit" value="提交评论" class="submit">
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                         </div>
@@ -109,8 +116,8 @@
                                         </li>
                                     </ul>
                                     <div class="page-box" style="margin: 5px 0px 0px 62px;">
-                                         <!-- 使用iView的分布组件 -->
-                                            <Page :total="totalcount" show-sizer placement="top" show-elevator @on-change="pageChange" :page-size="pageSize" />
+                                         <!-- 使用iView的分布组件 设置当前面 -->
+                                            <Page :current="pageIndex" :total="totalcount" show-sizer placement="top" show-elevator @on-change="pageChange" :page-size="pageSize" @on-page-size-change="sizeChange" :page-size-opts="[7,14,21]" />
                                       
                                     </div>
                                 </div>
@@ -163,13 +170,36 @@ export default {
       //页码
       pageIndex:1,
     //页容量
-      pageSize:10,
+      pageSize:7,
     // 评论数据
       comments:[],
       //评论总数
-       totalcount:0
-    };
+       totalcount:0,
+    //  评论内容
+      comment:"",
+    // 放大镜数据
+      images:{                                                                                    
+      'normal_size':  // required                          
+      [                                             
+        {'id':'unique id', 'url': 'image url'},      
+        {'id':'unique id', 'url': 'image url'}       
+      ]                                               
+                                                                     
+ },
+      //放大镜的设置
+      zoomerOptions:{
+         
+        'zoomFactor': 4,
+        'pane': 'container',
+        'hoverDelay': 300,
+        'namespace': 'container-zoomer',
+        'move_by_click':true,
+        'scroll_items': 4,
+        'choosed_thumb_border_color': "#ff3d00"
+     }      
+    };         
   },
+//   事件
   methods: {
     initData() {
         // 初始化购买个数
@@ -197,11 +227,43 @@ export default {
         })
         
     },
-    // 页面改变事件
+    // 页码改变事件
     pageChange(pageIndex){
         this.pageIndex=pageIndex;
         // 重新调用这一页的数据,用事情改变传过来的页码
        this.getComments();
+    },
+    // 页码尺寸容器改变
+    sizeChange(pageSize){
+        this.pageSize=pageSize;
+        // 重新获取评论数据即可
+        this.getComments();
+    },
+    // 获取评论内容
+    submitComment(){
+        // 非空判断
+       if(this.comment==""){
+           this.$Message.warning('请输入内容');
+       }else{
+        // 有内容 用接口发表评论
+        this.$axios.post(`site/validate/comment/post/goods/${this.artID}`,{
+            commenttxt:this.comment
+        }).then(res=>{
+            console.log(res);
+            // 判断是否成功
+            if(res.data.status==0){
+                // 提示用户
+                this.$Message.success(res.data.message);
+                // 清空评论框内容
+                this.comment="";
+                // 初始化页面为1,才能看到自己的评论
+                this.pageIndex=1;
+                // 重新渲染评论
+                this.getComments();
+            }
+        })
+        
+       }
     }
 
   },

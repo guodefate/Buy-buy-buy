@@ -16,10 +16,14 @@ import "./assets/site/css/style.css";
 // 导入axios
 import axios from "axios";
 Vue.prototype.$axios= axios;
+axios.defaults.baseURL = 'http://111.230.232.110:8899/';
 // 导入iview
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 Vue.use(iView);
+// 导入放大镜模块
+import ProductZoomer from 'vue-product-zoomer'
+Vue.use(ProductZoomer)
 // 路由规则
 let routes = [{
     path: '/',
