@@ -134,9 +134,10 @@ export default {
         this.toplist = response.data.message.toplist;
       });
       this.$axios.get('http://111.230.232.110:8899/site/goods/getgoodsgroup').then(res=>{
-        console.log(res);
+        // console.log(res);
         this.grouplist=res.data.message;
       });
+      window.scroll(0,0)
   },
   // //私有过滤器
   // filters: {

@@ -55,11 +55,12 @@
                                         </dd>
                                     </dl>
                                     <dl>
+                         
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
                                                 <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
                                                 <!-- 在需要修改的地方,通过$store.commit('事件名'),即可触发仓库数据的修改 -->
-                                                <button @click="$store.commit('increment')" class="add">加入购物车</button>
+                                                <button @click="add2Cart" class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -159,7 +160,7 @@ export default {
       //商品的id
       artID: "",
       // 商品信息
-      goodsinfo: [],
+      goodsinfo: {},
       //图片信息
       imglist: [],
       //热卖商品列表
@@ -180,7 +181,7 @@ export default {
       comment:"",
     // 放大镜数据
       images:{                                                                                    
-      'normal_size':  // required                          
+      normal_size:  // required                          
       [                                             
         // {'id':'unique id', 'url': 'image url'},      
         // {'id':'unique id', 'url': 'image url'}       
@@ -189,15 +190,15 @@ export default {
  },
       //放大镜的设置
       zoomerOptions:{        
-        'zoomFactor': 4,
-       'pane': 'container-round',
-       'hoverDelay': 300,
-       'namespace': 'inline-zoomer',
-       'move_by_click':true,
-       'scroll_items': 5,
-       'choosed_thumb_border_color': "#bbdefb"
+        zoomFactor: 4,
+        pane: 'container-round',
+       hoverDelay: 300,
+       namespace: 'inline-zoomer',
+       move_by_click:true,
+       scroll_items: 5,
+       choosed_thumb_border_color: "#bbdefb"
      }      
-    };         
+      };      
   },
 //   事件
   methods: {
@@ -227,6 +228,7 @@ export default {
               })
           })
         });
+        window.scroll(0, 0);
         // 调用获取评论的方法
         this.getComments();
     },
@@ -260,7 +262,7 @@ export default {
         this.$axios.post(`site/validate/comment/post/goods/${this.artID}`,{
             commenttxt:this.comment
         }).then(res=>{
-            console.log(res);
+            // console.log(res);
             // 判断是否成功
             if(res.data.status==0){
                 // 提示用户
@@ -275,20 +277,34 @@ export default {
         })
         
        }
+    },
+     //加入购物车
+    add2Cart(){
+        // 获取商品id,获取商品数量
+        // 提交载荷
+        this.$store.commit('add2Cart',{
+            goodId:this.artID,
+            goodNum:this.buyCount
+        })
+        this.$message({
+          message: '恭喜你，成功添加宝贝',
+          type: 'success'
+        });
+
     }
 
   },
   created() {
     //保存数据
+    //  console.log(this.$route.params);
     this.initData();
+    
   },
-  updated() {
-        window.scroll(0, 0);
-    },
   watch: {
     $route(newVal, oldVal) {
         // 设置图片数组为空 让放大镜组件 重新生成
        this.images.normal_size=[];
+    // 初始化数据
         this.initData();
     }
   }
