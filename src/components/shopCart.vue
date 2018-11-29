@@ -107,7 +107,7 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link to="/order">
+                            <router-link :to="'/order/'+selectedIds">
                             <button class="submit">立即结算</button>
                             </router-link>
                         </div>
@@ -158,6 +158,18 @@ export default {
   },
 //计算属性
    computed:{
+    // 计算选中的全部商品id
+        selectedIds(){
+         let ids="";
+         this.goodList.forEach(v=>{
+             if(v.isSelected==true){
+                 ids+=v.id;
+                 ids+=',';
+             }
+         })
+         ids=ids.slice(0,ids.length-1)
+         return ids;
+      },
     // 选中的个数
     selectedCount(){
         let num=0;

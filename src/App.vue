@@ -11,16 +11,16 @@
             <a target="_blank" href="#"></a>
           </div>
           <div id="menu" class="right-box">
-            <span style="display: none;">
-              <a href="" class="">登录</a>
+            <span v-show="$store.state.islogin==false">
+              <router-link to="/login">登录</router-link>
               <strong>|</strong>
               <a href="" class="">注册</a>
               <strong>|</strong>
             </span>
-            <span>
+            <span v-show="$store.state.islogin==true">
               <a href="" class="">会员中心</a>
               <strong>|</strong>
-              <a>退出</a>
+            <a @click="logOut">退出</a>
               <strong>|</strong>
             </span>
             
@@ -127,7 +127,18 @@ export default {
   // created(){
   //    console.log(this.$store.state.count);
   // }
- 
+ methods:{
+   logOut(){
+     this.$axios.get('site/account/logout').then(res=>{
+       console.log(res);
+       if(res.data.status===0){
+         this.$message(res.data.message);
+         this.$store.commit('changeLogin',false)
+       }
+        this.$router.push('/index');
+     })
+   }
+ }
 };
 </script>
 
