@@ -204,6 +204,7 @@ export default {
 //   事件
   methods: {
     initData() {
+        consoleconsole.log(222);
         // 初始化购买个数
         this.buyCount=1;
     //   console.log(this.$route.params);
