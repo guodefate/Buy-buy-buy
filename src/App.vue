@@ -130,7 +130,7 @@ export default {
  methods:{
    logOut(){
      this.$axios.get('site/account/logout').then(res=>{
-       console.log(res);
+       console.log(res.data);
        if(res.data.status===0){
          this.$message(res.data.message);
          this.$store.commit('changeLogin',false)
