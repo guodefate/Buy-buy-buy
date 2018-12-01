@@ -30,6 +30,9 @@ import detail from "./components/detail.vue"
 import shopCart from "./components/shopCart.vue"
 import order from "./components/order.vue"
 import login from "./components/login.vue"
+import payMoney from "./components/payMoney.vue"
+import paySucces from "./components/paySuccess.vue"
+import vipCenter from "./components/vipCenter.vue"
 // 路由规则
 let routes = [{
     path: '/',
@@ -50,11 +53,27 @@ let routes = [{
   },
   {
     path: '/order/:ids',
-    component: order
-  },
+    component: order,
+    meta: { checkLogin: true } 
+   },
   {
     path: '/login',
     component: login
+  },
+  {
+    path:'/payMoney/:orderId',
+    component:payMoney,
+    meta: { checkLogin: true }
+  },
+  {
+    path:'/paySuccess',
+    component:paySucces,
+    meta:{checkLogin:true}
+  },
+  {
+    path:'/vipCenter',
+    component:vipCenter,
+    meta:{checkLogin:true}
   }
 ]
 // 实例化路由
@@ -73,11 +92,11 @@ Vue.filter('shortTimePlus', value => {
 
 // 增加导航守卫 回调函数(每次路由改变的时候 触发)
 router.beforeEach((to, from, next) => {
-  console.log('我守卫你')
+  // console.log('我守卫你')
   // next();
   // console.log(to);
   // console.log(from);
-  if (to.path.indexOf('/order') != -1) {
+  if (to.meta.checkLogin==true) {
     axios.get("site/account/islogin").then(res => {
       //  console.log(res);
       if (res.data.code == "nologin") {
