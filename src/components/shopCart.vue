@@ -107,9 +107,9 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link :to="'/order/'+selectedIds">
-                            <button class="submit">立即结算</button>
-                            </router-link>
+                            <!-- <router-link @chick="" :to="'/order/'+selectedIds"> -->
+                            <button class="submit" @click="toOrder">立即结算</button>
+                            <!-- </router-link> -->
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -154,7 +154,15 @@ export default {
             message: '已取消删除'
           });          
         });
-     }
+     },
+    //立即结算
+    toOrder(){
+        if(this.selectedCount==0){
+            this.$message.warning('请勾选宝贝再提交')
+        }else{
+            this.$router.push('/order/'+this.selectedIds)
+        }
+    }
   },
 //计算属性
    computed:{

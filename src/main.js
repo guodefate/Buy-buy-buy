@@ -33,6 +33,9 @@ import login from "./components/login.vue"
 import payMoney from "./components/payMoney.vue"
 import paySucces from "./components/paySuccess.vue"
 import vipCenter from "./components/vipCenter.vue"
+import orderIndex from "./components/orderIndex.vue"
+import orderList from "./components/orderList.vue"
+import orderDetail from "./components/orderDetail.vue"
 // 路由规则
 let routes = [{
     path: '/',
@@ -73,12 +76,41 @@ let routes = [{
   {
     path:'/vipCenter',
     component:vipCenter,
-    meta:{checkLogin:true}
-  }
+    meta:{checkLogin:true},
+    children:[
+      {
+        path:'',
+        redirect:'orderIndex'
+      },
+      {
+        path: 'orderIndex',
+        component:orderIndex,
+        meta:{
+          currentName:'中心首页'
+        }
+      },
+      {
+        path: 'orderList',
+        component:orderList,
+        meta:{
+          currentName:'订单列表'
+        }
+      },
+      {
+        path: 'orderDetail/:orderId',
+        component:orderDetail,
+        meta:{
+          currentName:'订单详情'
+        }
+      },
+    ]
+  },
 ]
 // 实例化路由
 let router = new VueRouter({
-  routes
+  routes,
+  mode: 'history',
+ 
 });
 //导入moment
 import moment from "moment";
@@ -88,8 +120,10 @@ Vue.filter('shortTime', value => {
 });
 Vue.filter('shortTimePlus', value => {
   return moment(value).format("YYYY-MM-DD HH:mm:ss");
-})
-
+});
+Vue.filter('add', (value,Type) => {
+  return value+Type;
+});
 // 增加导航守卫 回调函数(每次路由改变的时候 触发)
 router.beforeEach((to, from, next) => {
   // console.log('我守卫你')
@@ -114,6 +148,10 @@ router.beforeEach((to, from, next) => {
     // next 如果不执行 就不会路由跳转
     next();
   }
+})
+// 前局后置的钩子
+router.afterEach((to, from) => {
+ window.scroll(0,0)
 })
 // vuex的使用
 import Vuex from 'vuex'
